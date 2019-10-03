@@ -2,6 +2,9 @@ public class Map {
     private Object key;
     private Object value;
     public boolean removeFlag = false;
+    public Map() {
+
+    }
     public Map(Object key,Object value) {
         this.key = key;
         this.value = value;

@@ -1,54 +1,89 @@
 public class HashMap {
 
     private Map[] table;
+    private double threshold = 0;
+    private final double loadfactor;
 
     public HashMap(Integer initialCapacity) {
         table = new Map[initialCapacity];
+        loadfactor = 0.75;
     }
 
-    public void put(Map map) {
-        Object key = map.getKey();
-        for (int i = key.hashCode(); i <= table.length; i++) {
-            if (table[i] == null || table[i].removeFlag) {
-                table[i] = map;
+    public void put(Object key, Object value) {
+        Map map = new Map(key, value);
+        int i = hash(key);
+        for (int j = 0; j < table.length; j++) {
+            if (table[(i + j) % table.length] != null) {
+                if (table[(i + j) % table.length].equals(map)) {
+                    break;
+                }
+            }
+            if (table[(i + j) % table.length] == null || table[(i + j) % table.length].removeFlag) {
+                table[(i + j) % table.length] = map;
+                table[(i + j) % table.length].removeFlag = false;
+                threshold = threshold + 1;
+                resize();
                 break;
             }
         }
     }
 
-    public Map get(Object key) {
-        Map tmp = new Map(key, key);
-        for ( int i = hash(key); i <= table.length; i++)
-            if (table[i].getKey().equals(key)) {
-                tmp = table[i];
-                break;
+    public Object get(Object key) {
+        Object tmp = new Object();
+        tmp = null;
+        int i = hash(key);
+        for (int j = 0; j < table.length; j++)
+            if (table[(i + j) % table.length] != null) {
+                if (table[(i + j) % table.length].getKey().equals(key)) {
+                    tmp = table[(i + j) % table.length].getValue();
+                    break;
+                }
             }
         return tmp;
     }
+
     public boolean contains(Object key) {
         boolean flag = false;
-
-        for (int i = hash(key); i < table.length; i++) {
-            if(table[i].getKey().equals(key)) {
-                flag = true;
-                break;
+        int i = hash(key);
+        for (int j = 0; j < table.length; j++) {
+            if (table[(i + j) % table.length] != null) {
+                if (table[(i + j) % table.length].getKey().equals(key) && !table[(i + j) % table.length].removeFlag) {
+                    flag = true;
+                    break;
+                }
             }
         }
         return flag;
     }
+
     public int size() {
         return table.length;
     }
+
     public void remove(Object key) {
-        for (int i = hash(key); i <= table.length; i++) {
-            if (table[i].getKey().equals(key)) {
-                table[i] = null;
-                table[i].removeFlag = true;
+        int i = hash(key);
+        for (int j = 0; j <= table.length; j++) {
+            if (table[(i + j) % table.length] != null) {
+                if (table[(i + j) % table.length].getKey().equals(key)) {
+                    table[(i + j) % table.length].removeFlag = true;
+                }
             }
         }
     }
 
     private int hash(Object object) {
-        return object.hashCode();
+        return Math.abs(object.hashCode() % table.length);
+    }
+
+    private void resize() {
+        if (threshold / table.length >= loadfactor) {
+            Map[] table1 = new Map[table.length * 2];
+            for (Map map : table) {
+                int l = 0;
+                l = map.getKey().hashCode() % (table.length * 2);
+                table1[l] = map;
+                table = table1;
+            }
+        }
     }
 }
