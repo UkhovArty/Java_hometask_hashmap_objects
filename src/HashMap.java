@@ -79,11 +79,13 @@ public class HashMap {
         if (threshold / table.length >= loadfactor) {
             Map[] table1 = new Map[table.length * 2];
             for (Map map : table) {
-                int l = 0;
-                l = map.getKey().hashCode() % (table.length * 2);
-                table1[l] = map;
-                table = table1;
+                if (map != null) {
+                    int l = 0;
+                    l = Math.abs(map.getKey().hashCode() % (table.length * 2));
+                    table1[l] = map;
+                }
             }
+            table = table1;
         }
     }
 }
