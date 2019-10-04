@@ -1,6 +1,5 @@
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Arty lox");
         HashMap myFirstHashMap = new HashMap();
         System.out.println(myFirstHashMap.size());
         myFirstHashMap.put(1, "petr");
