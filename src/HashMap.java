@@ -9,6 +9,11 @@ public class HashMap {
         loadfactor = 0.75;
     }
 
+    public HashMap() {
+        table = new Map[3];
+        loadfactor = 0.75;
+    }
+
     public void put(Object key, Object value) {
         Map map = new Map(key, value);
         int i = hash(key);
@@ -22,10 +27,10 @@ public class HashMap {
                 table[(i + j) % table.length] = map;
                 table[(i + j) % table.length].removeFlag = false;
                 threshold = threshold + 1;
-                resize();
                 break;
             }
         }
+        resize();
     }
 
     public Object get(Object key) {
@@ -77,15 +82,13 @@ public class HashMap {
 
     private void resize() {
         if (threshold / table.length >= loadfactor) {
-            Map[] table1 = new Map[table.length * 2];
-            for (Map map : table) {
+            Map[] table1 = table;
+            table = new Map[table.length * 2];
+            for (Map map : table1) {
                 if (map != null) {
-                    int l = 0;
-                    l = Math.abs(map.getKey().hashCode() % (table.length * 2));
-                    table1[l] = map;
+                    put(map.getKey(), map.getValue());
                 }
             }
-            table = table1;
         }
     }
 }
